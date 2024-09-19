@@ -148,12 +148,85 @@ class OpenGLWidget(QOpenGLWidget):
 
     def get_hover_point(self, mouse_pos):
         """
-        Convert mouse position to 3D coordinates (mockup).
+        Convert the 2D mouse position to a 3D point on the mesh using raycasting.
         """
 
-        # You would need raycasting or OpenGL picking for real calculations
-        # For now, we'll mock it with the center of the mesh
-        return self.mesh_center  # Replace this with real intersection calculations
+        # Get viewport, projection, and modelview matrices
+        viewport = glGetIntegerv(GL_VIEWPORT)
+        modelview = glGetDoublev(GL_MODELVIEW_MATRIX)
+        projection = glGetDoublev(GL_PROJECTION_MATRIX)
+
+        # Mouse coordinates in window (invert y-axis)
+        winX = mouse_pos.x()
+        winY = viewport[3] - mouse_pos.y() - 1  # Invert y-axis for OpenGL
+        winZ = glReadPixels(winX, winY, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT)[0]
+
+        # Unproject the mouse coordinates to get the corresponding world coordinates
+        posX, posY, posZ = gluUnProject(
+            winX, winY, winZ, modelview, projection, viewport
+        )
+
+        # Create a ray from the camera position (0, 0, 0 in view space) to the unprojected point
+        ray_origin = np.array([0.0, 0.0, 0.0])  # Camera at the origin
+        ray_direction = np.array([posX, posY, posZ]) - ray_origin
+        ray_direction = ray_direction / np.linalg.norm(ray_direction)  # Normalize
+
+        # Find the nearest point of intersection on the STL mesh
+        nearest_point = self.find_nearest_intersection(ray_origin, ray_direction)
+
+        return (
+            nearest_point if nearest_point is not None else self.mesh_center
+        )  # Return the nearest point or mock center
+
+    def find_nearest_intersection(self, ray_origin, ray_direction):
+        """
+        Find the nearest intersection between the ray and the STL triangles.
+        """
+
+        min_distance = float("inf")
+        nearest_point = None
+
+        for triangle in self.stl_mesh.vectors:
+            intersection = self.ray_intersects_triangle(
+                ray_origin, ray_direction, triangle
+            )
+            if intersection is not None:
+                distance = np.linalg.norm(ray_origin - intersection)
+                if distance < min_distance:
+                    min_distance = distance
+                    nearest_point = intersection
+
+        return nearest_point
+
+    def ray_intersects_triangle(self, ray_origin, ray_direction, triangle):
+        """
+        Ray-triangle intersection using the Möller–Trumbore algorithm.
+        Returns the intersection point or None if no intersection occurs.
+        """
+        vertex0, vertex1, vertex2 = triangle
+        edge1 = vertex1 - vertex0
+        edge2 = vertex2 - vertex0
+        h = np.cross(ray_direction, edge2)
+        a = np.dot(edge1, h)
+        if -1e-8 < a < 1e-8:
+            return None  # This means the ray is parallel to the triangle.
+
+        f = 1.0 / a
+        s = ray_origin - vertex0
+        u = f * np.dot(s, h)
+        if u < 0.0 or u > 1.0:
+            return None
+
+        q = np.cross(s, edge1)
+        v = f * np.dot(ray_direction, q)
+        if v < 0.0 or u + v > 1.0:
+            return None
+
+        t = f * np.dot(edge2, q)
+        if t > 1e-8:  # Ray intersection
+            return ray_origin + ray_direction * t
+        else:
+            return None  # No intersection
 
     def keyPressEvent(self, event):
         """
