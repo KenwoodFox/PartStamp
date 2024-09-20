@@ -7,6 +7,7 @@ name = "pypi"
 numpy-stl = "*"
 pyqt5 = "*"
 pyopengl = "*"
+setuptools = "*"
 
 [dev-packages]
 

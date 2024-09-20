@@ -1,7 +1,9 @@
 import sys
 import argparse
+
 from PyQt5.QtWidgets import QApplication
-from .stl_tool import STLViewer, engrave_text_on_stl, load_stl
+
+from partstamp.gui.gui_mode import STLViewer, engrave_text_on_stl, load_stl
 
 
 def main():

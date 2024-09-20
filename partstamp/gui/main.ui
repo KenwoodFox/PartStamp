@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+  <class>MainWindow</class>
+  <widget class="QMainWindow" name="MainWindow">
+    <property name="geometry">
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>1354</width>
+        <height>663</height>
+      </rect>
+    </property>
+    <property name="windowTitle">
+      <string>ReLoader</string>
+    </property>
+    <property name="windowIcon">
+      <iconset>
+        <normaloff>../resources/reloader.png</normaloff>../resources/reloader.png</iconset>
+    </property>
+    <widget class="QWidget" name="centralwidget">
+      <widget class="QTextEdit" name="loggingWindow">
+        <property name="geometry">
+          <rect>
+            <x>10</x>
+            <y>490</y>
+            <width>1331</width>
+            <height>111</height>
+          </rect>
+        </property>
+        <property name="readOnly">
+          <bool>true</bool>
+        </property>
+      </widget>
+      <widget class="QOpenGLWidget" name="opengl_widget" native="true">
+        <property name="geometry">
+          <rect>
+            <x>500</x>
+            <y>230</y>
+            <width>841</width>
+            <height>251</height>
+          </rect>
+        </property>
+        <zorder>verticalLayoutWidget</zorder>
+        <zorder>loggingWindow</zorder>
+        <zorder>loggingWindow</zorder>
+        <zorder>loggingWindow</zorder>
+      </widget>
+    </widget>
+    <widget class="QMenuBar" name="menubar">
+      <property name="geometry">
+        <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>1354</width>
+          <height>27</height>
+        </rect>
+      </property>
+      <widget class="QMenu" name="menuFile">
+        <property name="title">
+          <string>File</string>
+        </property>
+        <addaction name="actionOpen_Directory" />
+        <addaction name="actionNew_Shell_Case" />
+        <addaction name="actionClose_All" />
+      </widget>
+      <addaction name="menuFile" />
+    </widget>
+    <widget class="QStatusBar" name="statusbar" />
+    <action name="actionOpen_Directory">
+      <property name="text">
+        <string>Open Directory</string>
+      </property>
+    </action>
+    <action name="actionNew_Shell_Case">
+      <property name="text">
+        <string>New Shell/Case</string>
+      </property>
+    </action>
+    <action name="actionClose_All">
+      <property name="text">
+        <string>Close All</string>
+      </property>
+    </action>
+  </widget>
+  <resources />
+  <connections />
+</ui>

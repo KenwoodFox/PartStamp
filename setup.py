@@ -6,7 +6,11 @@ setup(
     description="Tool for engraving text onto STL files",
     author="Your Name",
     packages=find_packages(),
+    package_data={
+        "partstamp.gui": ["main.ui"],  # Include the .ui file in the package
+    },
     install_requires=[
+        "setuptools",
         "numpy-stl",
         "PyQt5",
         "PyOpenGL",
